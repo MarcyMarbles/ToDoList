@@ -1,16 +1,17 @@
 package com.example.todolist.Entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Tasks extends MappedSuperClass{
     private String name;
 
@@ -19,9 +20,9 @@ public class Tasks extends MappedSuperClass{
     @ManyToOne
     private Priority priority;
     @ManyToOne
-    private Users user;
+    private Person user;
 
     @ManyToMany(mappedBy = "tasks")
-    List<Users> assignees = new ArrayList<>();
+    List<Person> assignees = new ArrayList<>();
 
 }

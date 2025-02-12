@@ -5,11 +5,11 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -22,9 +22,8 @@ public class JwtUtils {
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String login, String role, String id, String username) {
+    public String generateToken(String login, String id, String username) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
         claims.put("id", id);
         claims.put("username", username);
         return Jwts.builder()
@@ -35,7 +34,6 @@ public class JwtUtils {
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
-
 
     public boolean validateToken(String token, String username) {
         try {
@@ -56,7 +54,6 @@ public class JwtUtils {
         }
     }
 
-    // Extract Username
     public String extractLogin(String token) {
         return extractClaims(token).getSubject();
     }
@@ -65,28 +62,18 @@ public class JwtUtils {
         return extractClaims(token).get("username", String.class);
     }
 
-    // Extract Roles
-    public String extractRoles(String token) {
-        return extractClaims(token).get("role", String.class);
-    }
-
-
-    public Authentication getAuthentication(String username, String role) {
-        GrantedAuthority authority = new SimpleGrantedAuthority(role);
-        return new UsernamePasswordAuthenticationToken(username, null, List.of(authority));
-    }
-
     public String extractId(String token) {
         return extractClaims(token).get("id", String.class);
     }
 
+    public Authentication getAuthentication(String username) {
+        return new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+    }
 
-    // Check Expiry
     private boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
     }
 
-    // Extract Claims
     private Claims extractClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
@@ -95,4 +82,7 @@ public class JwtUtils {
                 .getBody();
     }
 
+    public LocalDateTime getExpirationDate(String token){
+        return extractClaims(token).getExpiration().toInstant().atZone(TimeZone.getDefault().toZoneId()).toLocalDateTime();
+    }
 }

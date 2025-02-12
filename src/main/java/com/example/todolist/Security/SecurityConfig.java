@@ -1,39 +1,60 @@
 package com.example.todolist.Security;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    // Spring Security
-    // Spring MVC (HTML(CSS,JS), Model)
-    
+
+    private final JwtUtils jwtUtils;
+
+    public SecurityConfig(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
+    }
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, JwtUtils jwtUtils) {
-        JwtAuthenticationFilter jwtAuthenticationWebFilter = new JwtAuthenticationFilter(jwtUtils);
+    public SecurityFilterChain apiSecurity(HttpSecurity http) throws Exception {
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils);
         return http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .addFilterAt(jwtAuthenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-                .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/auth/**").permitAll()
-                        .pathMatchers("/api/register").permitAll()
-                        .pathMatchers("/api/user/profile/**").permitAll()
-                        .pathMatchers("/api/news").permitAll()
-                        .pathMatchers("/api/users").hasRole("ADMIN")
-                        .pathMatchers("/ws/**").authenticated()
-                        .pathMatchers("/home").authenticated()
-                        .anyExchange().authenticated()
+                .securityMatcher("/api/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/public/**").permitAll()
+                        .anyRequest().authenticated()
                 )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
+    }
+
+    @Bean
+    public SecurityFilterChain mvcSecurity(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher("/**")
+                .csrf(csrf -> csrf.configure(http))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/register", "/public/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form.loginPage("/login").permitAll())
+                .logout(logout -> logout.logoutSuccessUrl("/login"))
+                .build();
+    }
+
+
+    @Bean
+    public PasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

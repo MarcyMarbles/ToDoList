@@ -3,16 +3,20 @@ package com.example.todolist.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.OffsetDateTime;
 
 @MappedSuperclass
+@Getter
+@Setter
 public abstract class MappedSuperClass {
     @Id
     @GeneratedValue
-    private int id;
+    protected int id;
 
-    private OffsetDateTime created_ts;
-    private OffsetDateTime updated_ts;
-    private OffsetDateTime deleted_ts;
+    protected OffsetDateTime created_ts;
+    protected OffsetDateTime updated_ts;
+    protected OffsetDateTime deleted_ts;
 }
