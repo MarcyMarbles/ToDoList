@@ -16,7 +16,7 @@ public abstract class MappedSuperClass {
     @GeneratedValue
     protected int id;
 
-    protected OffsetDateTime created_ts;
+    protected OffsetDateTime created_ts = OffsetDateTime.now();
     protected OffsetDateTime updated_ts;
     protected OffsetDateTime deleted_ts;
 }

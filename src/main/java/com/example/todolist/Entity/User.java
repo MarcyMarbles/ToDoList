@@ -21,4 +21,14 @@ public class User extends MappedSuperClass {
 
     @ManyToMany(mappedBy = "users")
     List<Person> person = new ArrayList<>();
+
+    @Transient
+    private Person currentPerson;
+
+    public Person getCurrentPerson() {
+        if(person.isEmpty()) {
+            return null;
+        }
+        return person.get(0);
+    }
 }

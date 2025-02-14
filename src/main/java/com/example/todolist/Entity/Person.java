@@ -1,9 +1,6 @@
 package com.example.todolist.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +15,6 @@ public class Person extends MappedSuperClass {
     private String lastName;
     private String middleName;
     private String email;
-    private String password;
 
     @ManyToMany
     @JoinTable(
