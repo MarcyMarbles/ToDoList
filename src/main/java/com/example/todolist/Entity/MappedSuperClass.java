@@ -19,4 +19,6 @@ public abstract class MappedSuperClass {
     protected OffsetDateTime created_ts = OffsetDateTime.now();
     protected OffsetDateTime updated_ts;
     protected OffsetDateTime deleted_ts;
+    protected OffsetDateTime start_date_ts = OffsetDateTime.now();
+    protected OffsetDateTime end_date_ts = OffsetDateTime.MAX; //
 }

@@ -1,46 +1,70 @@
 package com.example.todolist.Controller.Rest;
 
-import com.example.todolist.Entity.Person;
+import com.example.todolist.Entity.Tasks;
 import com.example.todolist.Entity.User;
-import com.example.todolist.Security.JwtUtils;
-import com.example.todolist.Service.UserService;
+import com.example.todolist.Service.AuthService;
+import com.example.todolist.Service.TaskService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/protected/tasks")
 public class TaskController {
 
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final AuthService authService;
+    private final TaskService taskService;
 
-    @Autowired
-    private UserService userService;
+    public TaskController(AuthService authService, TaskService taskService) {
+        this.authService = authService;
+        this.taskService = taskService;
+    }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if (token == null) {
-            return ResponseEntity.status(401).body("Unauthorized");
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createTask(@RequestBody TaskRequestPOJO task, HttpServletRequest request) {
+        if (!task.isValid()) {
+            return ResponseEntity.badRequest().body("Task isn't valid");
         }
-        token = token.substring(7);
-        String login = jwtUtils.extractLogin(token);
-        if (login == null) {
+        User user = authService.getAuthenticatedUser(request);
+        if (user == null) {
             return ResponseEntity.status(401).body("Unauthorized");
+        }else if(user.getCurrentPerson() == null){
+            return ResponseEntity.status(401).body("Continue registration please on /api/protected/persons/create");
         }
-        User user = userService.getUserByLogin(login);
+        Tasks createdTask = taskService.createTask(task, user.getCurrentPerson());
+        return ResponseEntity.ok(createdTask);
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getTasks(HttpServletRequest request) {
+        User user = authService.getAuthenticatedUser(request);
         if (user == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
-        Person person = user.getCurrentPerson();
-        if(person == null) {
-            return ResponseEntity.status(401).body("Continue registration please");
-        }
+        return ResponseEntity.ok(taskService.getTasksByPerson(user.getCurrentPerson()));
+    }
 
-        return ResponseEntity.status(200).body("Test");
+    @GetMapping("/get/{category}")
+    public ResponseEntity<?> getTasksByCategory(@PathVariable String category, HttpServletRequest request) {
+        User user = authService.getAuthenticatedUser(request);
+        if (user == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+        return ResponseEntity.ok(taskService.getTasksByPersonAndCategory(user.getCurrentPerson(), category));
+    }
+
+    @Getter
+    @Setter
+    public static class TaskRequestPOJO {
+        private String name;
+        private String category;
+        private String priority;
+
+        public boolean isValid() {
+            return name != null && category != null && priority != null;
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.example.todolist.Security.JwtUtils;
 import com.example.todolist.Service.PersonService;
 import com.example.todolist.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +44,7 @@ public class PersonController {
                 personPOJO.lastName() == null ||
                 personPOJO.middleName() == null ||
                 personPOJO.email() == null) {
-            return ResponseEntity.status(400).body(new PersonResponse("Invalid person data", null));
+            return ResponseEntity.status(400).body(new PersonResponse("Invalid person data\n" + personPOJO.toString(), null));
         }
 
         if (personService.getPersonByEmail(personPOJO.email()).isPresent()) {
@@ -60,13 +61,14 @@ public class PersonController {
         }
         Person person = personService.createPerson(personPOJO);
         person.setUsers(new ArrayList<>(List.of(user)));
-        person = personService.savePerson(person);
+        personService.savePerson(person);
         return ResponseEntity.ok(new PersonResponse("Person created", personPOJO));
     }
 
 
+    @Getter
+    @Setter
     public static class PersonResponse {
-        @Setter
         String msg;
         PersonPOJO person;
 

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +23,13 @@ public class User extends MappedSuperClass {
     @ManyToMany(mappedBy = "users")
     List<Person> person = new ArrayList<>();
 
-    @Transient
-    private Person currentPerson;
-
     public Person getCurrentPerson() {
-        if(person.isEmpty()) {
+        if (person.isEmpty()) {
             return null;
         }
-        return person.get(0);
+        return person
+                .stream()
+                .filter(e -> OffsetDateTime.now().isAfter(e.start_date_ts) && OffsetDateTime.now().isBefore(e.end_date_ts))
+                .findFirst().orElse(null);
     }
 }

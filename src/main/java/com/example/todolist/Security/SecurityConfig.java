@@ -35,12 +35,10 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
                 .build();
     }
 
-    @Bean
+/*    @Bean
     @Order(2)
     public SecurityFilterChain mvcSecurity(HttpSecurity http) throws Exception {
         return http
@@ -53,7 +51,7 @@ public class SecurityConfig {
                 .formLogin(form -> form.loginPage("/login").permitAll())
                 .logout(logout -> logout.logoutSuccessUrl("/login"))
                 .build();
-    }
+    }*/
 
     @Bean
     public PasswordEncoder bCryptPasswordEncoder() {

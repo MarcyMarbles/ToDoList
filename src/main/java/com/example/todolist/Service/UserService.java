@@ -3,21 +3,26 @@ package com.example.todolist.Service;
 import com.example.todolist.Entity.User;
 import com.example.todolist.POJOs.UserAuthPOJO;
 import com.example.todolist.Repos.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.todolist.Security.JwtUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    private final JwtUtils jwtUtils;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtils = jwtUtils;
+    }
 
     public User createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -52,5 +57,14 @@ public class UserService {
         return userRepository
                 .findByLogin(userAuthPOJO.login())
                 .orElse(null) != null;
+    }
+
+    public User extractUserFromToken(String token) {
+        token = token.substring(7);
+        String login = jwtUtils.extractLogin(token);
+        if (login == null) {
+            return null;
+        }
+        return getUserByLogin(login);
     }
 }
