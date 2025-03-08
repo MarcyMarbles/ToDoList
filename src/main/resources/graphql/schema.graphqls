@@ -18,8 +18,8 @@ type User {
     deleted_ts: DateTime
     start_date_ts: DateTime
     end_date_ts: DateTime
-    person: [Person]
-    currentPerson: Person
+    person: [Person]!
+    currentPerson: Person!
 }
 
 type Person {

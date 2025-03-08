@@ -23,7 +23,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(1)   
+    @Order(1)
     public SecurityFilterChain apiSecurity(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils);
         return http
@@ -42,14 +42,22 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain mvcSecurity(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/**")
-                .csrf(csrf -> csrf.configure(http))
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**")
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/public/**", "/api/public/**").permitAll()
+                        .requestMatchers("/login", "/register", "/public/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form.loginPage("/login").permitAll())
-                .logout(logout -> logout.logoutSuccessUrl("/login"))
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                )
                 .build();
     }*/
 

@@ -32,14 +32,10 @@ public class UserService {
 
     public List<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
-        // To Show user by username
-        // 100 users can have the same username
     }
 
     public User getUserByLogin(String login) {
         return userRepository.findByLogin(login).orElse(null);
-        // To Show user by login
-        // 1 user can have only 1 login
     }
 
     public User login(String login, String password) {
