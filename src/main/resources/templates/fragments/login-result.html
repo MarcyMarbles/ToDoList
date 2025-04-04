@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="/js/redirector.js"></script>
+</head>
+<body>
+<!-- Success Fragment -->
+<div th:fragment="success">
+    <p style="color: green;" th:text="${message}"></p>
+    <script>
+        redirectTo('/home', 1000);
+    </script>
+</div>
+
+<!-- Error Fragment -->
+<div th:fragment="error">
+    <p style="color: red;" th:text="${error}"></p>
+</div>
+</body>
+</html>

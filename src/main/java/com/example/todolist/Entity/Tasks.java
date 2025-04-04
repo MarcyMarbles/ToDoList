@@ -17,8 +17,10 @@ public class Tasks extends MappedSuperClass{
 
     @ManyToOne
     private Category category;
+
     @ManyToOne
     private Priority priority;
+
     @ManyToOne
     private Person user;
 

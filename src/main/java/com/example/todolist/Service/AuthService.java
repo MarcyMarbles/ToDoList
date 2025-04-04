@@ -32,4 +32,24 @@ public class AuthService {
         }
         return null;
     }
+
+    public ResponseEntity<String> authenticate(String login, String password) {
+        if (login == null || password == null) {
+            return ResponseEntity.status(400).body("Invalid login or password");
+        }
+        User foundUser = userService.getUserByLogin(login);
+        if (foundUser == null) {
+            return ResponseEntity.status(401).body("Invalid login or password");
+        }
+        User authenticatedUser = userService.login(login, password);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("Invalid login or password");
+        }
+        String token = jwtUtils.generateToken(
+                authenticatedUser.getLogin(),
+                String.valueOf(authenticatedUser.getId()),
+                authenticatedUser.getUsername()
+        );
+        return ResponseEntity.ok(token);
+    }
 }
