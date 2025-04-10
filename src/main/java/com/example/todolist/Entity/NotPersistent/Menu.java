@@ -1,10 +1,9 @@
 package com.example.todolist.Entity.NotPersistent;
 
 import com.example.todolist.Entity.Roles;
-import com.example.todolist.XmlUtils.RoleAdapter;
+import com.example.todolist.XmlUtils.RoleDeserializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +15,7 @@ import java.util.List;
 public class Menu {
     private String title, url, icon;
     private List<Menu> subMenu;
-    @XmlJavaTypeAdapter(RoleAdapter.class)
+    @JsonDeserialize(contentUsing = RoleDeserializer.class)
     private List<Roles> roles; // Roles allowed to see this menu item
 
     public Menu(String title, String url, String icon, List<Menu> subMenu, List<Roles> roles) {
