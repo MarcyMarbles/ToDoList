@@ -2,17 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Register</title>
-    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
 <h2>Register</h2>
 
-<form th:object="${userForm}"
-      hx-post="/register"
-      hx-target="#register-response"
-      hx-swap="innerHTML">
+<form th:object="${userForm}" method="post" action="/register">
 
     <label>Username:
         <input th:field="*{username}" required/>
@@ -44,8 +40,6 @@
 
     <button type="submit">Register</button>
 </form>
-
-<div id="register-response"></div>
 
 </body>
 </html>

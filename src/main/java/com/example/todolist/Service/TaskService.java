@@ -5,6 +5,7 @@ import com.example.todolist.Entity.*;
 import com.example.todolist.Repos.TasksRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -54,4 +55,15 @@ public class TaskService {
     public Tasks createTask(TaskController.TaskRequestPOJO taskRequestPOJO, Person person){
         return createTask(taskRequestPOJO.getName(), taskRequestPOJO.getCategory(), taskRequestPOJO.getPriority(), person);
     }
+
+    public List<Tasks> getTasksForUser(Person person) {
+        return tasksRepository.findByUser(person);
+    }
+    public List<Tasks> getTasksDueToday(Person person) {
+        return tasksRepository.findByUserAndDeadline(person, new Date());
+    }
+    public List<Tasks> getOverdueTasks(Person person) {
+        return tasksRepository.findByUserAndDeadlineBefore(person, new Date());
+    }
+
 }

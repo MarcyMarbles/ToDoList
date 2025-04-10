@@ -21,6 +21,15 @@ public class JwtUtils {
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public String generateToken(String login) {
+        return Jwts.builder()
+                .setSubject(login)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public String generateToken(String login, String id, String username) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", id);

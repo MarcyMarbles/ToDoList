@@ -47,7 +47,14 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
-
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.18.1'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.18.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.1'
+    implementation 'com.fasterxml.woodstox:woodstox-core:7.1.0'
+    implementation 'org.codehaus.woodstox:stax2-api:4.2.2'
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0-RC2'
 }
 
 tasks.named('test') {

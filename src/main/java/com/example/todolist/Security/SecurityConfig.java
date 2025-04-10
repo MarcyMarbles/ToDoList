@@ -1,5 +1,9 @@
 package com.example.todolist.Security;
 
+import com.example.todolist.Repos.UserRepository;
+import com.example.todolist.Service.JwtAuthenticationSuccessHandler;
+import com.example.todolist.Service.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,16 +11,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
+
 
     public SecurityConfig(JwtUtils jwtUtils) {
         this.jwtUtils = jwtUtils;
@@ -38,31 +46,41 @@ public class SecurityConfig {
                 .build();
     }
 
-/*    @Bean
+    @Bean
     @Order(2)
     public SecurityFilterChain mvcSecurity(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**")
-                )
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login.html", "/register.html", "/public/**").permitAll()
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/login", "/register", "/public/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login.html")
+                        .loginPage("/login")
+                        .successHandler(authenticationSuccessHandler())
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login.html?logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .deleteCookies("JWT_TOKEN")
                         .permitAll()
                 )
                 .build();
-    }*/
+    }
 
     @Bean
     public PasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(UserRepository userRepository) {
+        return new UserDetailsServiceImpl(userRepository);
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new JwtAuthenticationSuccessHandler(jwtUtils);
     }
 }

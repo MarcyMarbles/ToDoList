@@ -1,5 +1,6 @@
 package com.example.todolist.Service;
 
+import com.example.todolist.Entity.Roles;
 import com.example.todolist.Entity.User;
 import com.example.todolist.POJOs.UserAuthPOJO;
 import com.example.todolist.Repos.UserRepository;
@@ -17,14 +18,24 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final JwtUtils jwtUtils;
+    private final RolesService rolesService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils, RolesService rolesService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
+        this.rolesService = rolesService;
     }
 
     public User createUser(User user) {
+        if (user.getLogin() == null || user.getPassword() == null) {
+            return null;
+        }
+        Roles roles = rolesService.getRoleByName("ROLE_USER");
+        if (roles == null) {
+            return null;
+        }
+        user.getRoles().add(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUsername(user.getLogin());
         return userRepository.save(user);
@@ -51,8 +62,8 @@ public class UserService {
 
     public boolean isUserAlreadyCreated(UserAuthPOJO userAuthPOJO) {
         return userRepository
-                .findByLogin(userAuthPOJO.login())
-                .orElse(null) != null;
+                       .findByLogin(userAuthPOJO.login())
+                       .orElse(null) != null;
     }
 
     public User extractUserFromToken(String token) {
