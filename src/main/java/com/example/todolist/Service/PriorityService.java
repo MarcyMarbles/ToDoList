@@ -6,6 +6,8 @@ import com.example.todolist.Repos.PriorityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PriorityService {
     @Autowired
@@ -28,5 +30,9 @@ public class PriorityService {
         priority.setName(name);
         priority.setUserId(person);
         return priorityRepository.save(priority);
+    }
+
+    public List<Priority> getAllPriorities(Person person) {
+        return priorityRepository.findByUserId(person);
     }
 }

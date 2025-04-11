@@ -32,4 +32,7 @@ public class Person extends MappedSuperClass {
     )
     private List<User> users = new ArrayList<>();
 
+    @OneToOne
+    private FileDescriptor profilePicture;
+
 }

@@ -9,7 +9,9 @@
             <icon>fa fa-home</icon>
             <roles>
                 <roles>ADMIN</roles>
+                <roles>ASSIGNER</roles>
                 <roles>USER</roles>
+                <roles>GUEST</roles>
             </roles>
         </subMenu>
         <Menu>
@@ -45,12 +47,16 @@
             <icon>fa fa-sign-out</icon>
             <roles>
                 <roles>ADMIN</roles>
+                <roles>ASSIGNER</roles>
                 <roles>USER</roles>
+                <roles>GUEST</roles>
             </roles>
         </subMenu>
     </subMenu>
     <roles>
         <roles>ADMIN</roles>
+        <roles>ASSIGNER</roles>
         <roles>USER</roles>
+        <roles>GUEST</roles>
     </roles>
 </Menu>

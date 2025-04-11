@@ -1,5 +1,6 @@
 package com.example.todolist.Service;
 
+import com.example.todolist.Entity.Person;
 import com.example.todolist.Entity.Roles;
 import com.example.todolist.Entity.User;
 import com.example.todolist.POJOs.UserAuthPOJO;
@@ -19,12 +20,14 @@ public class UserService {
 
     private final JwtUtils jwtUtils;
     private final RolesService rolesService;
+    private final PersonService personService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils, RolesService rolesService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils, RolesService rolesService, PersonService personService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.rolesService = rolesService;
+        this.personService = personService;
     }
 
     public User createUser(User user) {
@@ -74,4 +77,24 @@ public class UserService {
         }
         return getUserByLogin(login);
     }
+
+    public boolean checkPassword(User user, String password) {
+        return passwordEncoder.matches(password, user.getPassword());
+    }
+
+    public User updatePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        return userRepository.save(user);
+    }
+
+    public void saveUserAndPerson(User user, Person person) {
+        // TODO: Нарушает принцип единственной ответственности
+        userRepository.save(user);
+        personService.savePerson(person);
+    }
+
+    public User getUserById(Integer id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
 }

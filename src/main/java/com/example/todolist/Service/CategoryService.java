@@ -6,6 +6,8 @@ import com.example.todolist.Repos.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
@@ -14,23 +16,27 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category findByName(String name, Person user){
+    public Category findByName(String name, Person user) {
         return categoryRepository.findByNameAndUserId(name, user).orElse(null);
     }
 
-    public Category getOrCreateByName(String name, Person person){
+    public Category getOrCreateByName(String name, Person person) {
         Category category = findByName(name, person);
-        if(category == null){
+        if (category == null) {
             category = createCategory(name, person);
         }
         return category;
     }
 
-    public Category createCategory(String name, Person user){
+    public Category createCategory(String name, Person user) {
         Category category = new Category();
         category.setName(name);
         category.setUserId(user);
         return categoryRepository.save(category);
+    }
+
+    public List<Category> getAllCategories(Person person) {
+        return categoryRepository.findByUserId(person);
     }
 
 

@@ -3,6 +3,8 @@ package com.example.todolist.Service;
 import com.example.todolist.Controller.Rest.TaskController;
 import com.example.todolist.Entity.*;
 import com.example.todolist.Repos.TasksRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -64,6 +66,10 @@ public class TaskService {
     }
     public List<Tasks> getOverdueTasks(Person person) {
         return tasksRepository.findByUserAndDeadlineBefore(person, new Date());
+    }
+
+    public Page<Tasks> getTasksByPage(int page, int size, Person person) {
+        return tasksRepository.findByUser(person, PageRequest.of(page, size));
     }
 
 }
