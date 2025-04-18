@@ -1,5 +1,6 @@
 package com.example.todolist.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class Person extends MappedSuperClass {
             joinColumns = @JoinColumn(name = "person_id"),
             inverseJoinColumns = @JoinColumn(name = "task_id")
     )
+    @JsonIgnore
     private List<Tasks> tasks = new ArrayList<>();
 
     @ManyToMany
@@ -30,6 +32,7 @@ public class Person extends MappedSuperClass {
             joinColumns = @JoinColumn(name = "person_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @JsonIgnore
     private List<User> users = new ArrayList<>();
 
     @OneToOne

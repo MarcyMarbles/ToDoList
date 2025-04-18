@@ -1,5 +1,6 @@
 package com.example.todolist.Entity;
 
+import com.example.todolist.Entity.NotPersistent.Langs;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +33,8 @@ public class User extends MappedSuperClass {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Roles> roles = new HashSet<>();
+
+    private Langs lang = Langs.RU;
 
     public Person getCurrentPerson() {
         if (person.isEmpty()) {

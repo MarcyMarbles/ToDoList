@@ -74,8 +74,8 @@ public class JwtUtils {
         return extractClaims(token).get("id", String.class);
     }
 
-    public Authentication getAuthentication(String username) {
-        return new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+    public Authentication getAuthentication(String username, String token) {
+        return new UsernamePasswordAuthenticationToken(username, token, Collections.emptyList());
     }
 
     private boolean isTokenExpired(String token) {

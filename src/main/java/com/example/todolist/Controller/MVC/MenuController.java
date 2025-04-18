@@ -4,6 +4,7 @@ import com.example.todolist.Entity.MenuElement;
 import com.example.todolist.Entity.NotPersistent.Menu;
 import com.example.todolist.Entity.Roles;
 import com.example.todolist.Repos.MenuElementRepository;
+import com.example.todolist.Service.MenuService;
 import com.example.todolist.Service.RolesService;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jakarta.annotation.PostConstruct;
@@ -22,14 +23,4 @@ import java.util.Set;
 
 @Controller
 public class MenuController {
-    @Autowired
-    private MenuElementRepository menuElementRepository;
-
-    @ModelAttribute("menu")
-    public Set<MenuElement> menu() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Set<Roles> roles = rolesService.getUserRoles(auth); // тебе нужен метод, возвращающий Set<Roles>
-        return menuService.generateMenu(roles);
-    }
-
 }

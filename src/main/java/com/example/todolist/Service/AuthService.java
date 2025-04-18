@@ -5,6 +5,8 @@ import com.example.todolist.Security.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,11 +20,15 @@ public class AuthService {
     }
 
     public User getAuthenticatedUser(HttpServletRequest request) {
-        String token = extractToken(request);
-        if (token == null) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
-        return userService.extractUserFromToken(token);
+        String userName = authentication.getName();
+        if (userName == null) {
+            return null;
+        }
+        return userService.getUserByLogin(userName);
     }
 
     public String extractToken(HttpServletRequest request) {

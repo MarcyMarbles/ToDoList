@@ -28,8 +28,8 @@ public class TaskService {
         return name != null && category != null && priority != null && person != null;
     }
 
-    public Tasks createTask(String name, String category, String priority, Person person) {
-        if (isTaskValid(name, category, priority, person)) {
+    public Tasks createTask(String name, String category, String priority, String description, Date deadline, Person person) {
+        if (!isTaskValid(name, category, priority, person)) {
             throw new RuntimeException("Task is not valid to be created");
         }
         Category taskCategory = categoryService.getOrCreateByName(name, person);
@@ -56,7 +56,8 @@ public class TaskService {
     }
 
     public Tasks createTask(TaskController.TaskRequestPOJO taskRequestPOJO, Person person) {
-        return createTask(taskRequestPOJO.getName(), taskRequestPOJO.getCategory(), taskRequestPOJO.getPriority(), person);
+        return createTask(taskRequestPOJO.getName(), taskRequestPOJO.getCategory(), taskRequestPOJO.getPriority(),
+                taskRequestPOJO.getDescription(), taskRequestPOJO.getDeadline(), person);
     }
 
     public List<Tasks> getTasksForUser(Person person) {
@@ -75,9 +76,20 @@ public class TaskService {
         return tasksRepository.findByUser(person, PageRequest.of(page, size));
     }
 
-    public void endTask(Integer taskId) {
-        Tasks task = tasksRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
-        task.setEnd_date_ts(OffsetDateTime.now()); // Закрытие задачи
+    private Tasks getOrThrowTaskById(Integer taskId) {
+        return tasksRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+    }
+
+    public Tasks closeTaskById(Integer taskId) {
+        Tasks task = getOrThrowTaskById(taskId);
+        task.setEnd_date_ts(OffsetDateTime.now());
+        return tasksRepository.save(task);
+    }
+
+    public Tasks deleteTaskById(Integer taskId) {
+        Tasks task = getOrThrowTaskById(taskId);
+        task.setDeleted_ts(OffsetDateTime.now());
+        return tasksRepository.save(task);
     }
 
 }

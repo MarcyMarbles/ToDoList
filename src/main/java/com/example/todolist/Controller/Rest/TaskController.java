@@ -10,6 +10,8 @@ import lombok.Setter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @RestController
 @RequestMapping("/api/protected/tasks")
 public class TaskController {
@@ -56,15 +58,44 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTasksByPersonAndCategory(user.getCurrentPerson(), category));
     }
 
+    @PostMapping("/close/{taskId}")
+    public ResponseEntity<?> closeTaskById(@PathVariable Integer taskId, HttpServletRequest request) {
+        User user = authService.getAuthenticatedUser(request);
+        if (user == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+        Tasks task = taskService.closeTaskById(taskId);
+        if (task == null) {
+            return ResponseEntity.status(404).body("Task not found");
+        }
+        return ResponseEntity.ok(task);
+    }
+
+    @PostMapping("/delete/{taskId}")
+    public ResponseEntity<?> deleteTaskById(@PathVariable Integer taskId, HttpServletRequest request) {
+        User user = authService.getAuthenticatedUser(request);
+        if (user == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+        Tasks task = taskService.deleteTaskById(taskId);
+        if (task == null) {
+            return ResponseEntity.status(404).body("Task not found");
+        }
+        return ResponseEntity.ok(task);
+    }
+
     @Getter
     @Setter
     public static class TaskRequestPOJO {
         private String name;
         private String category;
         private String priority;
+        private Date deadline; // Nullable
+        private String description; // Nullable
 
         public boolean isValid() {
             return name != null && category != null && priority != null;
         }
     }
 }
+

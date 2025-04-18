@@ -1,5 +1,6 @@
 package com.example.todolist.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -15,7 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class Tasks extends MappedSuperClass {
+public class Tasks extends MappedLocalizedClass {
     private String name;
 
     @ManyToOne
@@ -27,6 +28,7 @@ public class Tasks extends MappedSuperClass {
     private Date deadline;
 
     @ManyToOne
+    @JsonIgnore
     private Person user;
 
     @ManyToMany(mappedBy = "tasks")

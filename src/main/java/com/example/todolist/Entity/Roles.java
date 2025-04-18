@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @Data
-public class Roles extends MappedSuperClass{
+public class Roles extends MappedLocalizedClass{
     private String name;
     private String description;
 
