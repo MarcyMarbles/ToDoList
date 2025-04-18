@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.2'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.23'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.9.23'
 }
 
 group = 'com.example'
@@ -55,8 +57,16 @@ dependencies {
     implementation 'com.fasterxml.woodstox:woodstox-core:7.1.0'
     implementation 'org.codehaus.woodstox:stax2-api:4.2.2'
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0-RC2'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }

@@ -44,7 +44,7 @@ public class PersonController {
                 personPOJO.lastName() == null ||
                 personPOJO.middleName() == null ||
                 personPOJO.email() == null) {
-            return ResponseEntity.status(400).body(new PersonResponse("Invalid person data\n" + personPOJO.toString(), null));
+            return ResponseEntity.status(400).body(new PersonResponse("Invalid person data\n" + personPOJO, null));
         }
 
         if (personService.getPersonByEmail(personPOJO.email()).isPresent()) {

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -23,12 +24,12 @@ public class TaskService {
     }
 
 
-    private boolean isTaskValid(String name, String category, String priority, Person person){
+    private boolean isTaskValid(String name, String category, String priority, Person person) {
         return name != null && category != null && priority != null && person != null;
     }
 
-    public Tasks createTask(String name, String category, String priority, Person person){
-        if(isTaskValid(name, category, priority,person)){
+    public Tasks createTask(String name, String category, String priority, Person person) {
+        if (isTaskValid(name, category, priority, person)) {
             throw new RuntimeException("Task is not valid to be created");
         }
         Category taskCategory = categoryService.getOrCreateByName(name, person);
@@ -41,35 +42,42 @@ public class TaskService {
         return tasksRepository.save(tasks);
     }
 
-    public List<Tasks> getTasksByPerson(Person person){
+    public List<Tasks> getTasksByPerson(Person person) {
         return tasksRepository.findByUser(person);
     }
 
-    public List<Tasks> getTasksByPersonAndCategory(Person person, Category category){
+    public List<Tasks> getTasksByPersonAndCategory(Person person, Category category) {
         return tasksRepository.findByUserAndCategory(person, category);
     }
 
-    public List<Tasks> getTasksByPersonAndCategory(Person person, String category){
+    public List<Tasks> getTasksByPersonAndCategory(Person person, String category) {
         Category taskCategory = categoryService.getOrCreateByName(category, person);
         return tasksRepository.findByUserAndCategory(person, taskCategory);
     }
 
-    public Tasks createTask(TaskController.TaskRequestPOJO taskRequestPOJO, Person person){
+    public Tasks createTask(TaskController.TaskRequestPOJO taskRequestPOJO, Person person) {
         return createTask(taskRequestPOJO.getName(), taskRequestPOJO.getCategory(), taskRequestPOJO.getPriority(), person);
     }
 
     public List<Tasks> getTasksForUser(Person person) {
         return tasksRepository.findByUser(person);
     }
+
     public List<Tasks> getTasksDueToday(Person person) {
         return tasksRepository.findByUserAndDeadline(person, new Date());
     }
+
     public List<Tasks> getOverdueTasks(Person person) {
         return tasksRepository.findByUserAndDeadlineBefore(person, new Date());
     }
 
     public Page<Tasks> getTasksByPage(int page, int size, Person person) {
         return tasksRepository.findByUser(person, PageRequest.of(page, size));
+    }
+
+    public void endTask(Integer taskId) {
+        Tasks task = tasksRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        task.setEnd_date_ts(OffsetDateTime.now()); // Закрытие задачи
     }
 
 }

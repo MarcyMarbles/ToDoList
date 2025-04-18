@@ -4,10 +4,14 @@ import com.example.todolist.Entity.Roles;
 import com.example.todolist.Repos.RoleRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class RolesService {
@@ -59,6 +63,14 @@ public class RolesService {
         if (roleRepository.findByName(name).isEmpty()) {
             roleRepository.save(new Roles(name, description));
         }
+    }
+
+    public Set<Roles> getUserRoles(Authentication authentication) {
+        Set<Roles> roles = new HashSet<>();
+        for (GrantedAuthority authority : authentication.getAuthorities()) {
+            roles.add(roleRepository.findByName(authority.getAuthority()).orElse(null)); // или map к объекту Roles
+        }
+        return roles;
     }
 
 

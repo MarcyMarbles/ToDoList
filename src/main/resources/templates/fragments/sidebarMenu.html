@@ -10,18 +10,19 @@
 <div class="sidebar" th:fragment="sidebarMenu">
     <ul class="page-sidebar-menu" th:if="${menu != null}">
         <h2><a th:text="${usr.username}" href="/profile"></a></h2>
-        <th:block th:insert="~{this :: renderMenu(menuItems=${menu.subMenu})}"/>
+        <th:block th:insert="~{this :: renderMenu(menuItems=${menu})}"/>
     </ul>
 </div>
 
 <!-- Recursive Fragment -->
 <th:block th:fragment="renderMenu(menuItems)">
     <th:block th:each="menuItem : ${menuItems}">
-        <li th:classappend="${menuItem.subMenu != null} ? 'has-sub'">
-            <a th:href="${menuItem.url} ?: '#'" th:text="${menuItem.title}">
+        <li th:classappend="!#lists.isEmpty(menuItem.subMenu) ? 'has-sub'">
+            <a th:href="${menuItem.url} ?: '#'">
                 <i th:class="${menuItem.icon}"></i>
+                <span th:text="${menuItem.title}"></span>
             </a>
-            <ul class="sub-menu" th:if="${menuItem.subMenu != null}">
+            <ul class="sub-menu" th:if="!#lists.isEmpty(menuItem.subMenu)">
                 <th:block th:insert="~{this :: renderMenu(menuItems=${menuItem.subMenu})}"/>
             </ul>
         </li>

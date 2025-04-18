@@ -1,6 +1,11 @@
 package com.example.todolist.Controller.MVC;
 
+import com.example.todolist.Entity.MenuElement;
 import com.example.todolist.Entity.NotPersistent.Menu;
+import com.example.todolist.Entity.Roles;
+import com.example.todolist.Repos.MenuElementRepository;
+import com.example.todolist.Service.MenuService;
+import com.example.todolist.Service.RolesService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.security.core.Authentication;
@@ -12,13 +17,19 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Set;
+
 @Controller
 @ControllerAdvice
 public class UiAdvice {
     private final MenuController menuController;
+    private final RolesService rolesService;
+    private final MenuService menuService;
 
-    public UiAdvice(MenuController menuController) {
+    public UiAdvice(MenuController menuController, RolesService rolesService, MenuService menuService) {
         this.menuController = menuController;
+        this.rolesService = rolesService;
+        this.menuService = menuService;
     }
 
     @Controller
@@ -37,17 +48,20 @@ public class UiAdvice {
     }
 
     @ModelAttribute("menu")
-    public Menu addMenu(Model model) {
-        return menuController.getMenu();
+    public Set<MenuElement> addMenu(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Set<Roles> roles = rolesService.getUserRoles(auth);
+        return menuService.generateMenu(roles);
     }
 
     @ModelAttribute("usr")
-    public UserDetails addUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() &&
-            !authentication.getPrincipal().equals("anonymousUser")) {
-            return (UserDetails) authentication.getPrincipal();
+    public UserDetails currentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = auth.getPrincipal();
+        if (principal instanceof UserDetails) {
+            return (UserDetails) principal;
         }
         return null;
     }
+
 }
