@@ -1,5 +1,6 @@
 package com.example.todolist.Service;
 
+import com.example.todolist.Entity.NotPersistent.Langs;
 import com.example.todolist.Entity.Person;
 import com.example.todolist.Entity.Priority;
 import com.example.todolist.Repos.PriorityRepository;
@@ -27,7 +28,8 @@ public class PriorityService {
 
     public Priority createPriority(String name, Person person){
         Priority priority = new Priority();
-        priority.setName(name);
+        Langs langs = person.getCurrentUser().getLang();
+        priority.setLangValue(langs, name);
         priority.setUserId(person);
         return priorityRepository.save(priority);
     }

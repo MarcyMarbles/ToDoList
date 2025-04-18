@@ -2,6 +2,7 @@ package com.example.todolist.Service;
 
 import com.example.todolist.Controller.Rest.TaskController;
 import com.example.todolist.Entity.*;
+import com.example.todolist.Entity.NotPersistent.Langs;
 import com.example.todolist.Repos.TasksRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,13 +33,16 @@ public class TaskService {
         if (!isTaskValid(name, category, priority, person)) {
             throw new RuntimeException("Task is not valid to be created");
         }
-        Category taskCategory = categoryService.getOrCreateByName(name, person);
-        Priority taskPriority = priorityService.getOrCreateByName(name, person);
+        Category taskCategory = categoryService.getOrCreateByName(category, person);
+        Priority taskPriority = priorityService.getOrCreateByName(priority, person);
+        Langs lang = person.getCurrentUser().getLang();
         Tasks tasks = new Tasks();
-        tasks.setName(name);
         tasks.setUser(person);
         tasks.setPriority(taskPriority);
         tasks.setCategory(taskCategory);
+        tasks.setLangValue(lang, name);
+        tasks.setDescription(lang, description);
+        tasks.setDeadline(deadline);
         return tasksRepository.save(tasks);
     }
 

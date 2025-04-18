@@ -1,6 +1,7 @@
 package com.example.todolist.Service;
 
 import com.example.todolist.Entity.Category;
+import com.example.todolist.Entity.NotPersistent.Langs;
 import com.example.todolist.Entity.Person;
 import com.example.todolist.Repos.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,8 @@ public class CategoryService {
 
     public Category createCategory(String name, Person user) {
         Category category = new Category();
-        category.setName(name);
+        Langs langs = user.getCurrentUser().getLang();
+        category.setLangValue(langs, name);
         category.setUserId(user);
         return categoryRepository.save(category);
     }

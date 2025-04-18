@@ -6,12 +6,12 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class MappedLocalizedClass extends MappedSuperClass {
     // Will have all localization fields for all languages
-    protected String langValue1; // ru - Задание
-    protected String langValue2; // en - Task
-    protected String description1; // ru - Задание
-    protected String description2; // en - Task
+    public String langValue1; // ru - Задание
+    public String langValue2; // en - Task
+    public String description1; // ru - Задание
+    public String description2; // en - Task
 
-    protected String getLangValue(Langs langs) // Based on the language of the user
+    public String getLangValue(Langs langs) // Based on the language of the user
     {
         return switch (langs) {
             case RU -> langValue1;
@@ -20,12 +20,28 @@ public abstract class MappedLocalizedClass extends MappedSuperClass {
         };
     }
 
-    protected String getDescription(Langs langs) // Based on the language of the user
+    public String getDescription(Langs langs) // Based on the language of the user
     {
         return switch (langs) {
             case RU -> description1;
             case EN -> description2;
             default -> throw new IllegalStateException("Unexpected value: " + langs);
         };
+    }
+
+    public void setLangValue(Langs langs, String value) {
+        switch (langs) {
+            case RU -> langValue1 = value;
+            case EN -> langValue2 = value;
+            default -> throw new IllegalStateException("Unexpected value: " + langs);
+        }
+    }
+
+    public void setDescription(Langs langs, String value) {
+        switch (langs) {
+            case RU -> description1 = value;
+            case EN -> description2 = value;
+            default -> throw new IllegalStateException("Unexpected value: " + langs);
+        }
     }
 }
